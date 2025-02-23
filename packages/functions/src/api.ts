@@ -1,10 +1,14 @@
-import { Resource } from "sst";
-import { Handler } from "aws-lambda";
-import { Example } from "@monorepo-template/core/example";
+import { Hono } from "hono";
+import { handle } from "hono/aws-lambda";
+import { logger } from "hono/logger";
+import imageRoute from "./api/image";
+// import albumRoute from "./api/album";
 
-export const handler: Handler = async (_event) => {
-  return {
-    statusCode: 200,
-    body: `${Example.hello()} Linked to ${Resource.MyBucket.name}.`,
-  };
-};
+const app = new Hono().use(logger());
+
+const routes = app.route("/image", imageRoute);
+// .route("/album", albumRoute);
+
+export type AppType = typeof routes;
+
+export const handler = handle(app);

@@ -1,5 +1,5 @@
 {
-  "name": "@monorepo-template/core",
+  "name": "@galleri/core",
   "type": "module",
   "version": "0.0.0",
   "scripts": {
@@ -12,7 +12,13 @@
     ]
   },
   "dependencies": {
-    "sst": "*"
+    "@aws-sdk/client-dynamodb": "^3.751.0",
+    "@aws-sdk/client-s3": "^3.750.0",
+    "@aws-sdk/lib-dynamodb": "^3.751.0",
+    "@aws-sdk/lib-storage": "^3.750.0",
+    "@aws-sdk/s3-request-presigner": "^3.750.0",
+    "sst": "*",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "vitest": "^2"
