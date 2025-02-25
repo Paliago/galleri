@@ -1,9 +1,18 @@
+import { useImages } from "@/hooks/use-images";
+
 export default function Home() {
+  const { data: images } = useImages();
+
   return (
     <>
-      <img src={`${import.meta.env.VITE_CDN_URL}lg/2fa30bed.jpg`} />
-      <img src={`${import.meta.env.VITE_CDN_URL}originals/2fa30bed.jpg`} />
-      <img src={`${import.meta.env.VITE_CDN_URL}thumb/2fa30bed.jpg`} />
+      {images
+        ? images.map((img) => (
+            <img
+              src={`${import.meta.env.VITE_CDN_URL}lg/${img.originalFilename}`}
+              className="rounded-xl"
+            />
+          ))
+        : undefined}
     </>
   );
 }

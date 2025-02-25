@@ -9,13 +9,22 @@ const app = new Hono();
 /**
  * Get image info
  */
-// app.get("/:id", async (c) => {
-//   const id = c.req.param("id");
-//
-//   const game = await Image.getInfo(id);
-//
-//   return c.json(game);
-// });
+app.get("/:id", async (c) => {
+  const id = c.req.param("id");
+
+  const game = await Image.get(id);
+
+  return c.json(game);
+});
+
+/**
+ * Get images info
+ */
+app.get("/", async (c) => {
+  const game = await Image.list();
+
+  return c.json(game);
+});
 
 app.get("/test", (c) => {
   const headers = new Headers();

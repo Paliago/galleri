@@ -16,6 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { UploadedImageCard } from "@/components/uploaded-image-card";
 import { useGetPresignedUrl } from "@/hooks/use-get-presigned-url";
 import {
   AlertCircle,
@@ -43,7 +44,7 @@ interface FileItem {
   progress: number;
 }
 
-interface UploadedFile {
+export interface UploadedFile {
   id: string;
   name: string;
   size: number;
@@ -82,7 +83,7 @@ export default function UploadPage() {
         });
       }
     },
-    [toast],
+    [],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -375,25 +376,7 @@ export default function UploadPage() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {uploadedFiles.map((file) => (
-                <Card key={file.id} className="overflow-hidden">
-                  <div className="aspect-square bg-muted relative">
-                    {/* This would typically show the actual uploaded image from S3 */}
-                    {/* For now, just displaying a placeholder */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <ImageIcon className="h-10 w-10 text-muted-foreground/50" />
-                    </div>
-                  </div>
-                  <CardFooter className="p-2">
-                    <div className="w-full">
-                      <p className="text-xs font-medium truncate">
-                        {file.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatFileSize(file.size)}
-                      </p>
-                    </div>
-                  </CardFooter>
-                </Card>
+                <UploadedImageCard key={file.id} file={file} />
               ))}
             </div>
           </CardContent>

@@ -69,7 +69,7 @@ export const handler: S3Handler = async (event: S3Event) => {
 
       for (const [size, dimensions] of Object.entries(SIZES)) {
         const newKey = `photos/${size}/${photoId}.${extension}`;
-        urls[size] = newKey;
+        urls[size] = `${size}/${photoId}.${extension}`;
 
         const quality = size === "display" ? 85 : 80;
 
