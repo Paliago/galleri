@@ -7,6 +7,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 import { Outlet } from "react-router";
 
 export default function LayoutGallerist() {
@@ -26,6 +27,7 @@ export default function LayoutGallerist() {
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <Outlet />
+          <Toaster richColors />
         </main>
       </SidebarInset>
     </SidebarProvider>

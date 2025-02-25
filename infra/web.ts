@@ -1,6 +1,7 @@
 import { api } from "./api";
+import { router } from "./router";
 
-new sst.aws.StaticSite("React", {
+export const web = new sst.aws.StaticSite("React", {
   path: "packages/web",
   build: {
     command: "bun run build",
@@ -8,5 +9,6 @@ new sst.aws.StaticSite("React", {
   },
   environment: {
     VITE_API_URL: api.url,
+    VITE_CDN_URL: $interpolate`${router.url}/files/`,
   },
 });

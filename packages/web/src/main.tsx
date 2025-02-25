@@ -3,14 +3,15 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import HomePage from "./app/home.tsx";
+import UploadPage from "./app/upload.tsx";
 import LayoutGallerist from "./app/layout-gallerist";
 import { ThemeProvider } from "./components/theme-provider.tsx";
-import "./index.css";
 import { OpenImgContextProvider } from "openimg/react";
+import "./index.css";
 
 const queryClient = new QueryClient();
 
-// biome-ignore lint/style/noNonNullAssertion: <explanation>
+// biome-ignore lint/style/noNonNullAssertion: just no
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <OpenImgContextProvider
@@ -24,9 +25,7 @@ createRoot(document.getElementById("root")!).render(
             <Routes>
               <Route path="/" element={<LayoutGallerist />}>
                 <Route index element={<HomePage />} />
-                {/* <Route path="game/new" element={<GameCreatePage />} /> */}
-                {/* <Route path="game/:id" element={<GamePage />} /> */}
-                {/* <Route path="game/:id/edit" element={<GameEditPage />} /> */}
+                <Route path="upload" element={<UploadPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Route>
             </Routes>

@@ -10,6 +10,10 @@ declare module "sst" {
       "type": "sst.aws.Function"
       "url": string
     }
+    "Main": {
+      "type": "sst.aws.Router"
+      "url": string
+    }
     "React": {
       "type": "sst.aws.StaticSite"
       "url": string

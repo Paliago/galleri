@@ -18,6 +18,7 @@ export default $config({
     await import("./infra/storage");
     await import("./infra/api");
     await import("./infra/web");
+    const { router } = await import("./infra/router");
 
     // Makes it easier to find the resources in the console
     new aws.resourcegroups.Group("Group", {
@@ -43,5 +44,8 @@ export default $config({
       },
     });
 
+    return {
+      router: router.url,
+    };
   },
 });
