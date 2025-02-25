@@ -21,13 +21,6 @@ body {
   margin: 0;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;

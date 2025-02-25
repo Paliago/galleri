@@ -8,6 +8,7 @@ import LayoutGallerist from "./app/layout-gallerist";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import { OpenImgContextProvider } from "openimg/react";
 import "./index.css";
+import ManagementPage from "./app/manage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -23,11 +24,14 @@ createRoot(document.getElementById("root")!).render(
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<LayoutGallerist />}>
+              <Route path="/albums" element={<LayoutGallerist />}>
                 <Route index element={<HomePage />} />
-                <Route path="upload" element={<UploadPage />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
               </Route>
+              <Route path="/" element={<LayoutGallerist />}>
+                <Route index element={<ManagementPage />} />
+                <Route path="upload" element={<UploadPage />} />
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </BrowserRouter>
         </QueryClientProvider>
