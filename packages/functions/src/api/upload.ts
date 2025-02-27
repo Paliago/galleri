@@ -9,12 +9,12 @@ const app = new Hono();
  * Gets presigned url
  */
 app.post("/", zValidator("json", Upload.schema), async (c) => {
-  const { contentType, size } = await c.req.json();
+  const { contentType, size } = c.req.valid("json");
 
   const photoId = randomUUID().split("-")[0];
   const extension = contentType.split("/")[1].replace("jpeg", "jpg");
   const filename = `${photoId}.${extension}`;
-  const key = `photos/originals/${filename}`;
+  const key = `photos/original/${filename}`;
 
   const signedUrl = await Upload.signUrl(photoId, key, contentType);
 

@@ -6,13 +6,14 @@ export const table = new sst.aws.Dynamo("Table", {
     sk: "string",
   },
   primaryIndex: { hashKey: "pk", rangeKey: "sk" },
+  stream: "new-and-old-images",
 });
 
 bucket.notify({
   notifications: [
     {
       events: ["s3:ObjectCreated:*"],
-      filterPrefix: "photos/originals/",
+      filterPrefix: "photos/original/",
       name: "resizer",
       function: {
         handler: "packages/functions/src/resizer.handler",
@@ -23,3 +24,22 @@ bucket.notify({
     },
   ],
 });
+
+table.subscribe(
+  "ImageDeleter",
+  { handler: "packages/functions/src/image-deleter.handler", link: [bucket] },
+  {
+    filters: [
+      {
+        eventName: ["REMOVE"],
+        dynamodb: {
+          Keys: {
+            pk: {
+              S: ["PHOTOS"],
+            },
+          },
+        },
+      },
+    ],
+  },
+);

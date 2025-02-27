@@ -6,9 +6,11 @@ import { Link } from "react-router";
 import { Image } from "@galleri/core/image";
 import { ManageImageCard } from "@/components/manage-image-card";
 import { ManageLightbox } from "@/components/manage-lightbox";
+import { useRemoveImages } from "@/hooks/use-remove-images";
 
 export default function ManagementPage() {
   const { data: images = [] } = useImages();
+  const { mutateAsync: removeImages } = useRemoveImages();
   const [selected, setSelected] = useState<string[]>([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(-1);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -32,6 +34,8 @@ export default function ManagementPage() {
     if (selectedImage && photoIds.includes(selectedImage.photoId)) {
       setLightboxOpen(false);
     }
+
+    removeImages(photoIds);
   };
 
   const handleAddToAlbum = (photoIds: string[], albumId: string) => {
@@ -129,17 +133,19 @@ export default function ManagementPage() {
         ))}
       </div>
 
-      <ManageLightbox
-        image={selectedImage}
-        isOpen={lightboxOpen}
-        onOpenChange={setLightboxOpen}
-        onDelete={handleDelete}
-        onAddToAlbum={handleAddToAlbum}
-        onNavigatePrevious={navigateToPrevious}
-        onNavigateNext={navigateToNext}
-        totalImages={images.length}
-        currentIndex={selectedImageIndex}
-      />
+      {selectedImage && (
+        <ManageLightbox
+          image={selectedImage}
+          isOpen={lightboxOpen}
+          onOpenChange={setLightboxOpen}
+          onDelete={handleDelete}
+          onAddToAlbum={handleAddToAlbum}
+          onNavigatePrevious={navigateToPrevious}
+          onNavigateNext={navigateToNext}
+          totalImages={images.length}
+          currentIndex={selectedImageIndex}
+        />
+      )}
     </div>
   );
 }

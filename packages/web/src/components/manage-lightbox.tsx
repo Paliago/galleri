@@ -1,18 +1,11 @@
 import { useEffect, useCallback } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Image } from "@galleri/core/image";
 import {
   Download,
   FolderPlus,
   Trash2,
-  X,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -143,7 +136,7 @@ export function ManageLightbox({
                   <li className="flex">
                     <span className="font-medium w-28">Dimensions:</span>
                     <span className="text-gray-600 dark:text-gray-300">
-                      {image?.metadata?.width} × {image?.metadata?.height}
+                      {image?.width} × {image?.height}
                     </span>
                   </li>
                   <li className="flex">

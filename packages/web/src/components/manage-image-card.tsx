@@ -53,8 +53,9 @@ export function ManageImageCard({
     <div className="relative border rounded-lg overflow-hidden group">
       <div className="absolute top-2 left-2 z-10 transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100">
         <div
-          className={`w-5 h-5 flex items-center justify-center bg-white rounded ${isSelected ? "opacity-100" : ""
-            }`}
+          className={`w-5 h-5 flex items-center justify-center bg-white rounded ${
+            isSelected ? "opacity-100" : ""
+          }`}
         >
           <Checkbox
             checked={isSelected}
@@ -63,8 +64,9 @@ export function ManageImageCard({
         </div>
       </div>
       <div
-        className={`absolute inset-0 transition-colors duration-300 ease-in-out ${isSelected ? "bg-blue-500/20" : "hover:bg-black/10"
-          }`}
+        className={`absolute inset-0 transition-colors duration-300 ease-in-out ${
+          isSelected ? "bg-blue-500/20" : "hover:bg-black/10"
+        }`}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
             onToggleSelection(image.photoId);

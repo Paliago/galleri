@@ -3,6 +3,8 @@ import { Hono } from "hono";
 import { getImgResponse } from "openimg/node";
 import { getImgSource } from "../lib/image";
 import { Resource } from "sst";
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
 
 const app = new Hono();
 
@@ -12,18 +14,28 @@ const app = new Hono();
 app.get("/:id", async (c) => {
   const id = c.req.param("id");
 
-  const game = await Image.get(id);
+  const image = await Image.get(id);
 
-  return c.json(game);
+  return c.json(image);
 });
 
 /**
  * Get images info
  */
 app.get("/", async (c) => {
-  const game = await Image.list();
+  const images = await Image.list();
 
-  return c.json(game);
+  return c.json(images);
+});
+
+/**
+ * Remove images
+ */
+app.delete("/remove", zValidator("json", z.string().array()), async (c) => {
+  const imageIds = c.req.valid("json");
+  await Image.remove(imageIds);
+
+  return c.json(imageIds);
 });
 
 app.get("/test", (c) => {

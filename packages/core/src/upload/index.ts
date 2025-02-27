@@ -38,7 +38,7 @@ export namespace Upload {
   }: {
     photoId: string;
     filename: string;
-    size: string;
+    size: number;
     contentType: string;
     key: string;
   }) => {
@@ -65,8 +65,12 @@ export namespace Upload {
   export const updateMetadata = async (
     photoId: string,
     urls: Record<string, string>,
-    aspectRatio: number,
     metadata: sharp.Metadata,
+    {
+      width,
+      height,
+      aspectRatio,
+    }: { width: number; height: number; aspectRatio: number },
   ) => {
     const command = new UpdateCommand({
       TableName: Resource.Table.name,
@@ -75,12 +79,14 @@ export namespace Upload {
         sk: `PHOTO#${photoId}`,
       },
       UpdateExpression:
-        "SET #status = :status, #metadata = :metadata, #urls = :urls, #aspectRatio = :aspectRatio",
+        "SET #status = :status, #metadata = :metadata, #urls = :urls, #aspectRatio = :aspectRatio, #width = :width, #height = :height",
       ExpressionAttributeNames: {
         "#status": "status",
         "#metadata": "metadata",
         "#urls": "urls",
         "#aspectRatio": "aspectRatio",
+        "#width": "width",
+        "#height": "height",
       },
       ExpressionAttributeValues: {
         ":status": "complete",
@@ -96,6 +102,8 @@ export namespace Upload {
         },
         ":urls": urls,
         ":aspectRatio": aspectRatio,
+        ":width": width,
+        ":height": height,
       },
     });
 
