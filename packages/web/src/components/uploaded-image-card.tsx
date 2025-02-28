@@ -1,65 +1,61 @@
 import { UploadedFile } from "@/app/upload";
-import { useImage } from "@/hooks/use-image";
 import { Card, CardFooter } from "./ui/card";
-import { AlertCircle, ImageIcon, Loader2, RefreshCcw } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Button } from "./ui/button";
+import { formatFileSize } from "@/lib/utils";
 
 export function UploadedImageCard({ file }: { file: UploadedFile }) {
-  const { data: image, isLoading, isError, refetch } = useImage(file.id);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadAttempt, setLoadAttempt] = useState(0);
 
-  const [processingRetries, setProcessingRetries] = useState(0);
+  const imageUrl =
+    import.meta.env.VITE_CDN_URL + "sm/" + file.id + "." + file.extension;
 
-  // Automatically retry fetching the image data if URLs are not yet available
+  // Initial delay before first attempt
   useEffect(() => {
-    if (image && !image.urls && processingRetries < 5) {
+    if (loadAttempt === 0) {
+      const initialTimer = setTimeout(() => {
+        setLoadAttempt(1);
+      }, 2000); // Wait 2 seconds before first attempt
+
+      return () => clearTimeout(initialTimer);
+    }
+  }, [loadAttempt]);
+
+  // Retry logic with longer delay
+  useEffect(() => {
+    // Only set up a timer if we're loading and haven't exceeded max attempts
+    if (isLoading && loadAttempt > 0 && loadAttempt < 5) {
       const timer = setTimeout(() => {
-        refetch();
-        setProcessingRetries((prev) => prev + 1);
-      }, 2000); // Retry every 2 seconds
+        setLoadAttempt((prev) => prev + 1);
+      }, 2500); // 2.5 seconds between retries
 
       return () => clearTimeout(timer);
     }
-  }, [image, refetch, processingRetries]);
+  }, [isLoading, loadAttempt]);
 
-  // Determine if the image is in processing state (uploaded but no URLs yet)
-  const isProcessing = image && !image.urls;
+  const handleImageError = () => {
+    setIsLoading(true);
+  };
 
   return (
     <Card className="overflow-hidden">
       <div className="aspect-square bg-muted relative">
-        {isLoading ? (
+        {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center">
             <Loader2 className="h-8 w-8 text-muted-foreground/50 animate-spin" />
           </div>
-        ) : isError ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-            <AlertCircle className="h-8 w-8 text-red-500/50" />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => refetch()}
-              className="text-xs"
-            >
-              <RefreshCcw className="h-3 w-3 mr-1" />
-              Retry
-            </Button>
-          </div>
-        ) : isProcessing ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-            <Loader2 className="h-8 w-8 text-amber-500/50 animate-spin" />
-            <p className="text-xs text-muted-foreground">Processing image...</p>
-          </div>
-        ) : image?.urls ? (
+        )}
+        {loadAttempt > 0 && (
           <img
-            src={import.meta.env.VITE_CDN_URL + image.urls.md}
+            key={loadAttempt}
+            src={`${imageUrl}?attempt=${loadAttempt}`}
             alt={file.name}
             className="w-full h-full object-cover"
+            style={{ opacity: isLoading ? 0 : 1 }}
+            onLoad={() => setIsLoading(false)}
+            onError={handleImageError}
           />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <ImageIcon className="h-10 w-10 text-muted-foreground/50" />
-          </div>
         )}
       </div>
       <CardFooter className="p-2">
@@ -69,20 +65,12 @@ export function UploadedImageCard({ file }: { file: UploadedFile }) {
             <p className="text-xs text-muted-foreground">
               {formatFileSize(file.size)}
             </p>
-            {image?.metadata && (
-              <p className="text-xs text-muted-foreground">
-                {image.metadata.width} × {image.metadata.height}
-              </p>
-            )}
+            <p className="text-xs text-muted-foreground">
+              {file.width} × {file.height}
+            </p>
           </div>
         </div>
       </CardFooter>
     </Card>
   );
-}
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return bytes + " B";
-  else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
-  else return (bytes / 1048576).toFixed(2) + " MB";
 }

@@ -4,20 +4,22 @@ import { unmarshall } from "@aws-sdk/util-dynamodb";
 import type { AttributeValue } from "@aws-sdk/client-dynamodb";
 
 export const handler: DynamoDBStreamHandler = async (event) => {
-  console.log(event);
+  console.log("Handling image deletion");
   for (const record of event.Records) {
-    console.log(record);
+    console.log(record.dynamodb);
     if (record.dynamodb?.OldImage) {
-      // cast to the correct AttributeValue type
       const oldImage = record.dynamodb.OldImage as Record<
         string,
         AttributeValue
       >;
-      const unmarshalled = unmarshall(oldImage);
+      try {
+        const unmarshalled = unmarshall(oldImage);
 
-      console.log("Removing image from bucket");
-      console.log(unmarshalled.urls);
-      await Image.removeFromBucket(unmarshalled.urls);
+        console.log("Removing image from bucket");
+        await Image.removeFromBucket(unmarshalled.urls);
+      } catch (error) {
+        console.error("Failed to unmarshall image:", error);
+      }
     }
   }
 };

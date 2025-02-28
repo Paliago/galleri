@@ -9,6 +9,7 @@ import { ThemeProvider } from "./components/theme-provider.tsx";
 import { OpenImgContextProvider } from "openimg/react";
 import "./index.css";
 import ManagementPage from "./app/manage.tsx";
+import GalleryPage from "./app/gallery.tsx";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ createRoot(document.getElementById("root")!).render(
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <Routes>
+              <Route path="/gallery" element={<GalleryPage />} />
               <Route path="/albums" element={<LayoutGallerist />}>
                 <Route index element={<HomePage />} />
               </Route>

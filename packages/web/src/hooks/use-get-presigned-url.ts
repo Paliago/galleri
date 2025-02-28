@@ -4,6 +4,7 @@ import { Upload } from "@galleri/core/upload";
 type GetPresignedUrlResponse = {
   uploadUrl: string;
   photoId: string;
+  extension: string;
 };
 
 export const useGetPresignedUrl = () => {
@@ -18,6 +19,7 @@ export const useGetPresignedUrl = () => {
       });
 
       if (!response.ok) {
+        console.error(response);
         throw new Error(`Failed to get presigned URL: ${response.status}`);
       }
 

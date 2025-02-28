@@ -1,5 +1,10 @@
 import { useEffect, useCallback } from "react";
-import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Image } from "@galleri/core/image";
 import {
@@ -9,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { formatFileSize } from "@/lib/utils";
 
 interface ManageLightboxProps {
   image: Image.ImageData | null;
@@ -33,13 +39,6 @@ export function ManageLightbox({
   totalImages,
   currentIndex,
 }: ManageLightboxProps) {
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + " B";
-    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
-    else if (bytes < 1073741824) return (bytes / 1048576).toFixed(1) + " MB";
-    else return (bytes / 1073741824).toFixed(1) + " GB";
-  };
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -78,6 +77,7 @@ export function ManageLightbox({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[95vw] w-[95vw] max-h-[95vh] h-[95vh] p-4 flex flex-col">
         <DialogHeader className="flex justify-between items-center">
+          <DialogTitle className="hidden">Image Lightbox</DialogTitle>
           <div className="flex items-center gap-2">
             {totalImages > 0 && (
               <span className="text-sm text-gray-500">

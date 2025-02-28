@@ -148,7 +148,7 @@ export const handler: S3Handler = async (event: S3Event) => {
           : 1;
 
       // Update metadata with dimensions from full-size image
-      await Upload.updateMetadata(photoId, urls, metadata, {
+      await Upload.updateImageMetadata(photoId, urls, metadata, {
         width: fullSizeInfo.width ?? metadata.width ?? 0,
         height: fullSizeInfo.height ?? metadata.height ?? 0,
         aspectRatio,

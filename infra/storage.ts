@@ -7,6 +7,7 @@ export const table = new sst.aws.Dynamo("Table", {
   },
   primaryIndex: { hashKey: "pk", rangeKey: "sk" },
   stream: "new-and-old-images",
+  ttl: "expireAt",
 });
 
 bucket.notify({

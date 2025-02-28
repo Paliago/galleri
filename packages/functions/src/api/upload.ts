@@ -26,7 +26,7 @@ app.post("/", zValidator("json", Upload.schema), async (c) => {
     key,
   });
 
-  return c.json({ uploadUrl: signedUrl, photoId });
+  return c.json({ uploadUrl: signedUrl, photoId, extension });
 });
 
 export default app;

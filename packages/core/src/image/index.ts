@@ -41,7 +41,7 @@ export namespace Image {
     originalFilename: z.string(),
     size: z.number(),
     contentType: z.string(),
-    status: z.literal("complete"),
+    imageStatus: z.union([z.literal("complete"), z.literal("uploading")]),
     s3Key: z.string(),
     createdAt: z.string().datetime(),
     metadata: photoMetadataSchema.optional(),
@@ -78,9 +78,11 @@ export namespace Image {
     const command = new QueryCommand({
       TableName: Resource.Table.name,
       KeyConditionExpression: "pk = :pk AND begins_with(sk, :skPrefix)",
+      FilterExpression: "imageStatus = :imageStatus",
       ExpressionAttributeValues: {
         ":pk": "PHOTOS",
         ":skPrefix": "PHOTO#",
+        ":imageStatus": "complete",
       },
     });
 

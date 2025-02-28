@@ -1,8 +1,5 @@
 import { Image } from "@galleri/core/image";
 import { Hono } from "hono";
-import { getImgResponse } from "openimg/node";
-import { getImgSource } from "../lib/image";
-import { Resource } from "sst";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 
@@ -36,19 +33,6 @@ app.delete("/remove", zValidator("json", z.string().array()), async (c) => {
   await Image.remove(imageIds);
 
   return c.json(imageIds);
-});
-
-app.get("/test", (c) => {
-  const headers = new Headers();
-  headers.set("Cache-Control", "public, max-age=31536000, immutable");
-
-  return getImgResponse(c.req.raw, {
-    headers,
-    getImgSource,
-    allowlistedOrigins: [
-      `https://${Resource.Storage.name}.s3.eu-north-1.amazonaws.com`,
-    ],
-  });
 });
 
 export default app;

@@ -1,23 +1,12 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import FileItem from "@/components/file-item";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { UploadedImageCard } from "@/components/uploaded-image-card";
 import { useGetPresignedUrl } from "@/hooks/use-get-presigned-url";
+import { formatFileSize } from "@/lib/utils";
 import {
   AlertCircle,
   CheckCircle2,
@@ -25,7 +14,6 @@ import {
   UploadCloud,
   File,
   Cloud,
-  ImageIcon,
   X,
 } from "lucide-react";
 import { useState, useCallback } from "react";
@@ -34,7 +22,7 @@ import { toast } from "sonner";
 
 type FileStatus = "queued" | "preparing" | "uploading" | "complete" | "error";
 
-interface FileItem {
+export interface FileItem {
   file: File;
   id: string;
   name: string;
@@ -49,14 +37,15 @@ export interface UploadedFile {
   name: string;
   size: number;
   type: string;
+  extension: string;
+  width: number;
+  height: number;
 }
 
 // TODO: handle duplicates
-// TODO: have a preview when added to the queue but not yet started the upload
-// TODO: make the preview images in the queue not reload every time a state updated
 export default function UploadPage() {
   const [files, setFiles] = useState<FileItem[]>([]);
-  const [uploadProgress, setUploadProgress] = useState<{
+  const [_, setUploadProgress] = useState<{
     [key: string]: number;
   }>({});
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
@@ -107,14 +96,32 @@ export default function UploadPage() {
     }
   };
 
+  const getImageDimensions = (
+    file: File,
+  ): Promise<{ width: number; height: number }> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        resolve({ width: img.width, height: img.height });
+        URL.revokeObjectURL(img.src);
+      };
+      img.onerror = () => {
+        reject(new Error("Failed to load image"));
+        URL.revokeObjectURL(img.src);
+      };
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   const uploadSingleFile = async (fileItem: FileItem) => {
     try {
       updateFileStatus(fileItem.id, "preparing");
 
-      const { uploadUrl, photoId } = await presignedUrlMutation.mutateAsync({
-        contentType: fileItem.type,
-        size: fileItem.size,
-      });
+      const { uploadUrl, photoId, extension } =
+        await presignedUrlMutation.mutateAsync({
+          contentType: fileItem.type,
+          size: fileItem.size,
+        });
 
       updateFileStatus(fileItem.id, "uploading");
 
@@ -141,6 +148,8 @@ export default function UploadPage() {
         xhr.send(fileItem.file);
       });
 
+      const dimensions = await getImageDimensions(fileItem.file);
+
       updateFileStatus(fileItem.id, "complete");
       setUploadedFiles((prev) => [
         ...prev,
@@ -149,6 +158,9 @@ export default function UploadPage() {
           name: fileItem.name,
           size: fileItem.size,
           type: fileItem.type,
+          extension,
+          width: dimensions.width,
+          height: dimensions.height,
         },
       ]);
     } catch (error) {
@@ -173,12 +185,6 @@ export default function UploadPage() {
     setFiles((prev) => prev.filter((f) => f.id !== id));
   };
 
-  const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return bytes + " B";
-    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
-    else return (bytes / 1048576).toFixed(2) + " MB";
-  };
-
   const getStatusIcon = (status: FileStatus) => {
     switch (status) {
       case "preparing":
@@ -194,13 +200,6 @@ export default function UploadPage() {
     }
   };
 
-  const getFilePreview = (file: File) => {
-    if (file.type.startsWith("image/")) {
-      return URL.createObjectURL(file);
-    }
-    return null;
-  };
-
   const queuedCount = files.filter((f) => f.status === "queued").length;
   const uploadingCount = files.filter(
     (f) => f.status === "uploading" || f.status === "preparing",
@@ -214,21 +213,15 @@ export default function UploadPage() {
         <h1 className="text-3xl font-bold">Upload Photos</h1>
         {files.length > 0 && (
           <div className="flex space-x-2">
-            <Badge variant="outline">{files.length} Files</Badge>
+            <Badge variant="default">{files.length} Files</Badge>
             {queuedCount > 0 && (
-              <Badge variant="outline" className="bg-blue-50">
-                {queuedCount} Queued
-              </Badge>
+              <Badge variant="outline">{queuedCount} Queued</Badge>
             )}
             {uploadingCount > 0 && (
-              <Badge variant="outline" className="bg-yellow-50">
-                {uploadingCount} Uploading
-              </Badge>
+              <Badge variant="secondary">{uploadingCount} Uploading</Badge>
             )}
             {completedCount > 0 && (
-              <Badge variant="outline" className="bg-green-50">
-                {completedCount} Completed
-              </Badge>
+              <Badge variant="default">{completedCount} Completed</Badge>
             )}
             {errorCount > 0 && (
               <Badge variant="destructive">{errorCount} Failed</Badge>
@@ -285,35 +278,15 @@ export default function UploadPage() {
             <CardTitle>File Queue</CardTitle>
           </CardHeader>
           <CardContent>
-            <ScrollArea className="h-[600px] pr-4">
+            <ScrollArea className="h-[400px] pr-4">
+              <ScrollBar />
               <div className="space-y-2">
                 {files.map((file) => (
                   <div
                     key={file.id}
                     className="flex items-center gap-4 p-3 border rounded-md"
                   >
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Avatar className="h-10 w-10 rounded-md">
-                            {file.type.startsWith("image/") &&
-                            file.status !== "queued" ? (
-                              <AvatarImage
-                                src={getFilePreview(file.file) || undefined}
-                                alt={file.name}
-                                className="object-cover"
-                              />
-                            ) : (
-                              <AvatarFallback className="rounded-md bg-muted">
-                                <ImageIcon className="h-5 w-5" />
-                              </AvatarFallback>
-                            )}
-                          </Avatar>
-                        </TooltipTrigger>
-                        <TooltipContent>Preview</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-
+                    <FileItem file={file} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <p className="text-sm font-medium truncate">
