@@ -1,31 +1,24 @@
 import * as React from "react";
 import {
   BookOpen,
-  Bot,
-  Command,
-  Frame,
-  Image,
-  LifeBuoy,
-  Map,
-  PieChart,
-  Send,
+  GalleryThumbnails,
+  ImagePlus,
   Settings2,
-  SquareTerminal,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
-import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarHeader,
+  SidebarGroup,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Link, useLocation } from "react-router";
 
 const data = {
   user: {
@@ -35,146 +28,90 @@ const data = {
   },
   navMain: [
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
+      title: "Pictures",
+      url: "/gallerist/pictures",
+      icon: ImagePlus,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Upload",
+          url: "/gallerist/pictures/upload",
         },
         {
-          title: "Starred",
-          url: "#",
+          title: "Favorites",
+          url: "/gallerist/pictures/favorites",
+          disabled: true,
         },
         {
-          title: "Settings",
-          url: "#",
+          title: "Trash",
+          url: "/gallerist/pictures/trash",
+          disabled: true,
         },
       ],
     },
     {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
+      title: "Albums",
+      url: "/gallerist/albums",
       icon: BookOpen,
       items: [
         {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
+          title: "Create",
+          url: "/gallerist/albums/create",
         },
       ],
     },
     {
       title: "Settings",
-      url: "#",
+      url: "/gallerist/settings",
       icon: Settings2,
       items: [
         {
           title: "General",
-          url: "#",
+          url: "/gallerist/settings",
+          disabled: true,
         },
         {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
+          title: "Users",
+          url: "/gallerist/settings/users",
+          disabled: true,
         },
       ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Support",
-      url: "#",
-      icon: LifeBuoy,
-    },
-    {
-      title: "Feedback",
-      url: "#",
-      icon: Send,
-    },
-  ],
-  projects: [
-    {
-      name: "Upload Images",
-      url: "upload",
-      icon: Image,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
     },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { pathname } = useLocation();
+
+  // Add isActive property based on current pathname
+  const navMainWithActive = data.navMain.map((item) => ({
+    ...item,
+    isActive:
+      pathname === item.url ||
+      item.items?.some((subItem) => pathname === subItem.url),
+    items: item.items?.map((subItem) => ({
+      ...subItem,
+      isActive: pathname === subItem.url,
+    })),
+  }));
+
   return (
     <Sidebar variant="inset" {...props}>
-      {/* <SidebarHeader> */}
-      {/*   <SidebarMenu> */}
-      {/*     <SidebarMenuItem> */}
-      {/*       <SidebarMenuButton size="lg" asChild> */}
-      {/*         <a href="#"> */}
-      {/*           <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground"> */}
-      {/*             <Command className="size-4" /> */}
-      {/*           </div> */}
-      {/*           <div className="grid flex-1 text-left text-sm leading-tight"> */}
-      {/*             <span className="truncate font-semibold">Acme Inc</span> */}
-      {/*             <span className="truncate text-xs">Enterprise</span> */}
-      {/*           </div> */}
-      {/*         </a> */}
-      {/*       </SidebarMenuButton> */}
-      {/*     </SidebarMenuItem> */}
-      {/*   </SidebarMenu> */}
-      {/* </SidebarHeader> */}
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMain items={navMainWithActive} />
+        <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+          <SidebarGroupLabel>Gallery</SidebarGroupLabel>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link to="/gallery">
+                  <GalleryThumbnails />
+                  <span>Go to Gallery</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

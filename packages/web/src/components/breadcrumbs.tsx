@@ -1,3 +1,4 @@
+import { Link, useLocation } from "react-router";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -7,17 +8,44 @@ import {
   BreadcrumbPage,
 } from "./ui/breadcrumb";
 
+const formatPathSegment = (segment: string) => {
+  return segment
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
 export default function Breadcrumbs() {
+  const location = useLocation();
+  const pathSegments = location.pathname.split("/").filter(Boolean);
+
+  const breadcrumbPaths = pathSegments.map((_, index) => {
+    return "/" + pathSegments.slice(0, index + 1).join("/");
+  });
+
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        <BreadcrumbItem className="hidden md:block">
-          <BreadcrumbLink href="#">Building Your Application</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator className="hidden md:block" />
-        <BreadcrumbItem>
-          <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-        </BreadcrumbItem>
+        {pathSegments.map((segment, index) => {
+          const isLast = index === pathSegments.length - 1;
+
+          return (
+            <BreadcrumbItem key={segment}>
+              {isLast ? (
+                <BreadcrumbPage>{formatPathSegment(segment)}</BreadcrumbPage>
+              ) : (
+                <>
+                  <BreadcrumbLink asChild>
+                    <Link to={breadcrumbPaths[index]}>
+                      {formatPathSegment(segment)}
+                    </Link>
+                  </BreadcrumbLink>
+                  <BreadcrumbSeparator />
+                </>
+              )}
+            </BreadcrumbItem>
+          );
+        })}
       </BreadcrumbList>
     </Breadcrumb>
   );

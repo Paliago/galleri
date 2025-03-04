@@ -6,7 +6,6 @@
     "@galleri/core": "*",
     "@hono/zod-validator": "^0.4.3",
     "hono": "^4.7.2",
-    "openimg": "^0.2.1",
     "sst": "*"
   },
   "devDependencies": {

@@ -36,7 +36,6 @@
         "@galleri/core": "*",
         "@hono/zod-validator": "^0.4.3",
         "hono": "^4.7.2",
-        "openimg": "^0.2.1",
         "sst": "*",
       },
       "devDependencies": {
@@ -75,7 +74,6 @@
         "clsx": "^2.1.1",
         "lucide-react": "^0.475.0",
         "next-themes": "^0.4.4",
-        "openimg": "^0.2.1",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "react-dropzone": "^14.3.8",
@@ -846,8 +844,6 @@
     "oidc-token-hash": ["oidc-token-hash@5.1.0", "", {}, "sha512-y0W+X7Ppo7oZX6eovsRkuzcSM40Bicg2JEJkDJ4irIt1wsYAP5MLSNv+QAogO8xivMffw/9OvV3um1pxXgt1uA=="],
 
     "openid-client": ["openid-client@5.6.4", "", { "dependencies": { "jose": "^4.15.4", "lru-cache": "^6.0.0", "object-hash": "^2.2.0", "oidc-token-hash": "^5.0.3" } }, "sha512-T1h3B10BRPKfcObdBklX639tVz+xh34O7GjofqrqiAQdm7eHsQ00ih18x6wuJ/E6FxdtS2u3FmUGPDeEcMwzNA=="],
-
-    "openimg": ["openimg@0.2.1", "", { "optionalDependencies": { "react": ">=18.0.0", "react-dom": ">=18.0.0", "sharp": "^0.33.5", "vite": "^6.1.0" } }, "sha512-3GlNJko96/AYaKZWUwfPuii0dm6Cu3armqK6lKnvXb67weYdagHFXuY5Xfu+1/AeON8wevtcmsK5+7I7+T6mkg=="],
 
     "package-json-from-dist": ["package-json-from-dist@1.0.1", "", {}, "sha512-UEZIS3/by4OC8vL3P2dTXRETpebLI2NiI5vIrjaD/5UtrkFX/tNbwjTSRAGC/+7CAo2pIcBaRgWmcBBHcsaCIw=="],
 

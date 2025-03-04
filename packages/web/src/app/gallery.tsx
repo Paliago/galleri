@@ -78,12 +78,7 @@ export default function Gallery() {
 
   if (isLoading) {
     return (
-      <div
-        className={cn(
-          "min-h-screen py-8 max-w-[120rem] mx-auto p-6 md:p-8 font-sans",
-          darkMode ? "bg-gray-900" : "bg-amber-50",
-        )}
-      >
+      <div className={cn(darkMode ? "bg-gray-900" : "bg-amber-50")}>
         <div className="mb-10 animate-pulse flex flex-col items-center">
           <div
             className={cn(
@@ -118,12 +113,7 @@ export default function Gallery() {
 
   if (!images || images.length === 0) {
     return (
-      <div
-        className={cn(
-          "min-h-screen py-8 max-w-[120rem] mx-auto p-8 font-sans text-center",
-          darkMode ? "bg-gray-900" : "bg-amber-50",
-        )}
-      >
+      <div className={cn(darkMode ? "bg-gray-900" : "bg-amber-50")}>
         <h1 className="text-4xl mb-2 font-light tracking-tight">{title}</h1>
         <p
           className={cn(
@@ -146,12 +136,7 @@ export default function Gallery() {
   }
 
   return (
-    <div
-      className={cn(
-        "min-h-screen py-8 max-w-[120rem] mx-auto p-6 md:p-8 font-sans",
-        darkMode ? "bg-gray-900" : "bg-amber-50",
-      )}
-    >
+    <div className={cn(darkMode ? "bg-gray-900" : "bg-amber-50")}>
       <header className="mb-10 text-center">
         <h1
           className={cn(

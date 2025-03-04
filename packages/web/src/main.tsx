@@ -2,42 +2,50 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
-import HomePage from "./app/home.tsx";
 import UploadPage from "./app/upload.tsx";
 import LayoutGallerist from "./app/layout-gallerist";
 import { ThemeProvider } from "./components/theme-provider.tsx";
-import { OpenImgContextProvider } from "openimg/react";
 import "./index.css";
 import ManagementPage from "./app/manage.tsx";
 import GalleryPage from "./app/gallery.tsx";
+import LayoutGallery from "./app/layout-gallery.tsx";
+import AlbumManagementPage from "./app/albums.tsx";
 
 const queryClient = new QueryClient();
 
 // biome-ignore lint/style/noNonNullAssertion: just no
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <OpenImgContextProvider
-      getSrc={(args) =>
-        `${`${import.meta.env.VITE_API_URL}image/test`}?src=${args.src}&w=${args.width}&h=${args.height}&fit=${args.fit}&format=${args.format}`
-      }
-    >
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/gallery" element={<GalleryPage />} />
-              <Route path="/albums" element={<LayoutGallerist />}>
-                <Route index element={<HomePage />} />
-              </Route>
-              <Route path="/" element={<LayoutGallerist />}>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="gallery" element={<LayoutGallery />}>
+              <Route index element={<GalleryPage />} />
+            </Route>
+            <Route path="gallerist" element={<LayoutGallerist />}>
+              <Route
+                index
+                element={<Navigate to="/gallerist/pictures" replace />}
+              />
+
+              <Route path="pictures">
                 <Route index element={<ManagementPage />} />
                 <Route path="upload" element={<UploadPage />} />
               </Route>
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </BrowserRouter>
-        </QueryClientProvider>
-      </ThemeProvider>
-    </OpenImgContextProvider>
+
+              <Route path="albums">
+                <Route index element={<AlbumManagementPage />} />
+                <Route path="create" element={<UploadPage />} />
+              </Route>
+            </Route>
+            <Route
+              path="*"
+              element={<Navigate to="/gallerist/pictures" replace />}
+            />
+          </Routes>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ThemeProvider>
   </StrictMode>,
 );
