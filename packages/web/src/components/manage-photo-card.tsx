@@ -7,8 +7,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { formatFileSize } from "@/lib/utils";
-import { Image } from "@galleri/core/image";
+import { cn, formatDate, formatFileSize } from "@/lib/utils";
+import { Photo } from "@galleri/core/photo";
 import {
   Download,
   Edit,
@@ -18,71 +18,66 @@ import {
   Trash2,
 } from "lucide-react";
 
-interface ManageImageCardProps {
-  image: Image.ImageData;
+interface ManagePhotoCardProps {
+  photo: Photo.PhotoData;
   isSelected: boolean;
   onToggleSelection: (photoId: string) => void;
   onDelete: (photoIds: string[]) => void;
   onAddToAlbum: (photoIds: string[], albumId: string) => void;
-  onOpenLightbox: (image: Image.ImageData) => void;
+  onOpenLightbox: (photo: Photo.PhotoData) => void;
 }
 
-export function ManageImageCard({
-  image,
+export function ManagePhotoCard({
+  photo,
   isSelected,
   onToggleSelection,
   onDelete,
   onAddToAlbum,
   onOpenLightbox,
-}: ManageImageCardProps) {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
+}: ManagePhotoCardProps) {
   return (
-    <div className="relative border rounded-lg overflow-hidden group">
-      <div className="absolute top-2 left-2 z-10 transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100">
-        <div
-          className={`w-5 h-5 flex items-center justify-center bg-white rounded ${
-            isSelected ? "opacity-100" : ""
-          }`}
-        >
+    <div className="relative border-none rounded-lg overflow-hidden group">
+      <div
+        className={cn(
+          "absolute top-2 left-2 z-10 transition-opacity duration-300 ease-in-out",
+          isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100",
+        )}
+      >
+        <div className="w-5 h-5 flex items-center justify-center rounded">
           <Checkbox
             checked={isSelected}
-            onCheckedChange={() => onToggleSelection(image.photoId)}
+            onCheckedChange={() => onToggleSelection(photo.photoId)}
+            className="bg-primary"
           />
         </div>
       </div>
       <div
-        className={`absolute inset-0 transition-colors duration-300 ease-in-out ${
-          isSelected ? "bg-blue-500/20" : "hover:bg-black/10"
-        }`}
+        className={cn(
+          `absolute inset-0 transition-colors duration-300 ease-in-out`,
+          isSelected ? "bg-blue-500/20" : "group-hover:bg-black/10",
+        )}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
-            onToggleSelection(image.photoId);
+            onToggleSelection(photo.photoId);
           }
         }}
       />
       <div className="relative aspect-square">
         <img
-          src={`${import.meta.env.VITE_CDN_URL}${image.urls?.display}`}
-          alt={image.originalFilename}
+          src={`${import.meta.env.VITE_CDN_URL}${photo.urls?.display}`}
+          alt={photo.originalFilename}
           className="absolute inset-0 w-full h-full object-cover cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
-            onOpenLightbox(image);
+            onOpenLightbox(photo);
           }}
         />
       </div>
       <div className="p-2 bg-white dark:bg-gray-800">
         <div className="flex justify-between items-center">
           <div className="text-xs text-gray-500">
-            <p>{formatFileSize(image.size)}</p>
-            <p>{formatDate(image.createdAt)}</p>
+            <p>{formatFileSize(photo.size)}</p>
+            <p>{formatDate(photo.createdAt)}</p>
           </div>
         </div>
       </div>
@@ -101,7 +96,7 @@ export function ManageImageCard({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="z-30">
               <DropdownMenuItem
-                onSelect={() => onAddToAlbum([image.photoId], "newAlbum")}
+                onSelect={() => onAddToAlbum([photo.photoId], "newAlbum")}
               >
                 <FolderPlus className="mr-2 h-4 w-4" />
                 Add to Album
@@ -120,7 +115,7 @@ export function ManageImageCard({
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onSelect={() => onDelete([image.photoId])}
+                onSelect={() => onDelete([photo.photoId])}
                 className="text-red-600"
               >
                 <Trash2 className="mr-2 h-4 w-4" />

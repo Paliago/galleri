@@ -148,7 +148,7 @@ export const handler: S3Handler = async (event: S3Event) => {
           : 1;
 
       // Update metadata with dimensions from full-size image
-      await Upload.updateImageMetadata(photoId, urls, metadata, {
+      await Upload.updatePhotoMetadata(photoId, urls, metadata, {
         width: fullSizeInfo.width ?? metadata.width ?? 0,
         height: fullSizeInfo.height ?? metadata.height ?? 0,
         aspectRatio,
@@ -157,7 +157,7 @@ export const handler: S3Handler = async (event: S3Event) => {
       console.log(`Successfully processed ${photoId}`);
     }
   } catch (error) {
-    console.error("Error processing image:", error);
+    console.error("Error processing photo:", error);
     throw error;
   }
 };

@@ -1,4 +1,4 @@
-import { FileItem } from "@/app/upload";
+import { FileItem } from "@/app/gallerist/pictures/upload";
 import { useState, useEffect } from "react";
 
 export function useObjectUrl(file: FileItem["file"]) {

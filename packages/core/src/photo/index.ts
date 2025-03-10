@@ -1,4 +1,5 @@
 import {
+  BatchGetCommand,
   BatchWriteCommand,
   GetCommand,
   QueryCommand,
@@ -9,7 +10,7 @@ import { ddb } from "../lib/ddb";
 import { s3 } from "../lib/s3";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 
-export namespace Image {
+export namespace Photo {
   const photoMetadataSchema = z.object({
     channels: z.number(),
     format: z.string(),
@@ -41,9 +42,12 @@ export namespace Image {
     originalFilename: z.string(),
     size: z.number(),
     contentType: z.string(),
-    imageStatus: z.union([z.literal("complete"), z.literal("uploading")]),
+    photoStatus: z.union([z.literal("complete"), z.literal("uploading")]),
     s3Key: z.string(),
     createdAt: z.string().datetime(),
+    // TODO: make deletions happen on ttl
+    deletedAt: z.string().datetime().optional(),
+    expireAt: z.number().optional(),
     metadata: photoMetadataSchema.optional(),
     aspectRatio: z.number().optional(),
     width: z.number().optional(),
@@ -58,7 +62,7 @@ export namespace Image {
     gsi1sk: true,
   });
 
-  export type ImageData = z.infer<typeof schemaWithoutId>;
+  export type PhotoData = z.infer<typeof schemaWithoutId>;
 
   export const get = async (id: string) => {
     const command = new GetCommand({
@@ -71,35 +75,35 @@ export namespace Image {
 
     const res = await ddb.send(command);
 
-    return res.Item as ImageData | undefined;
+    return res.Item as PhotoData | undefined;
   };
 
   export const list = async () => {
     const command = new QueryCommand({
       TableName: Resource.Table.name,
       KeyConditionExpression: "pk = :pk AND begins_with(sk, :skPrefix)",
-      FilterExpression: "imageStatus = :imageStatus",
+      FilterExpression: "photoStatus = :photoStatus",
       ExpressionAttributeValues: {
         ":pk": "PHOTOS",
         ":skPrefix": "PHOTO#",
-        ":imageStatus": "complete",
+        ":photoStatus": "complete",
       },
     });
 
     const res = await ddb.send(command);
 
-    return res.Items as ImageData[];
+    return res.Items as PhotoData[];
   };
 
   /**
-   * Remove image
+   * Remove photo
    * Remove from ddb and then s3 from a stream
    */
-  export const remove = async (imageIds: string[]) => {
-    // remove images from ddb
+  export const remove = async (photoIds: string[]) => {
+    // remove photos from ddb
     const command = new BatchWriteCommand({
       RequestItems: {
-        [Resource.Table.name]: imageIds.map((id) => ({
+        [Resource.Table.name]: photoIds.map((id) => ({
           DeleteRequest: {
             Key: {
               pk: "PHOTOS",
@@ -122,13 +126,13 @@ export namespace Image {
         console.warn(
           `retrying deletion for ${unprocessedIds.length} unprocessed items`,
         );
-        // wait a bit before retrying (simple backoff)
+        // simple backoff
         await new Promise((resolve) => setTimeout(resolve, 100));
         await remove(unprocessedIds);
       }
     }
 
-    return imageIds;
+    return photoIds;
   };
 
   export const removeFromBucket = async (photoUrls: PhotoUrls) => {
@@ -144,5 +148,23 @@ export namespace Image {
     }
 
     await Promise.all(commands.map((command) => s3.send(command)));
+  };
+
+  // Batch get photos based on id
+  export const batchGet = async (photoIds: string[]) => {
+    const command = new BatchGetCommand({
+      RequestItems: {
+        [Resource.Table.name]: {
+          Keys: photoIds.map((id) => ({
+            pk: "PHOTOS",
+            sk: `PHOTO#${id}`,
+          })),
+        },
+      },
+    });
+
+    const res = await ddb.send(command);
+
+    return res.Responses?.[Resource.Table.name] as PhotoData[] | undefined;
   };
 }

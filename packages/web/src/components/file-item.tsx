@@ -1,4 +1,4 @@
-import { FileItem } from "@/app/upload";
+import { FileItem } from "@/app/gallerist/pictures/upload";
 import { useObjectUrl } from "@/hooks/use-object-url";
 import { Avatar, AvatarImage } from "./ui/avatar";
 

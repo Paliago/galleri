@@ -1,4 +1,4 @@
-import { Image } from "@galleri/core/image";
+import { Photo } from "@galleri/core/photo";
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
@@ -6,33 +6,33 @@ import { z } from "zod";
 const app = new Hono();
 
 /**
- * Get image info
+ * Get photo info
  */
 app.get("/:id", async (c) => {
   const id = c.req.param("id");
 
-  const image = await Image.get(id);
+  const photo = await Photo.get(id);
 
-  return c.json(image);
+  return c.json(photo);
 });
 
 /**
- * Get images info
+ * Get photos info
  */
 app.get("/", async (c) => {
-  const images = await Image.list();
+  const photos = await Photo.list();
 
-  return c.json(images);
+  return c.json(photos);
 });
 
 /**
- * Remove images
+ * Remove photos
  */
 app.delete("/remove", zValidator("json", z.string().array()), async (c) => {
-  const imageIds = c.req.valid("json");
-  await Image.remove(imageIds);
+  const photoIds = c.req.valid("json");
+  await Photo.remove(photoIds);
 
-  return c.json(imageIds);
+  return c.json(photoIds);
 });
 
 export default app;

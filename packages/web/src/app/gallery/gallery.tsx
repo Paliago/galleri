@@ -1,14 +1,14 @@
-import { useImages } from "@/hooks/use-images";
+import { usePhotos } from "@/hooks/use-photos";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
 export default function Gallery() {
   const title = "gallery";
-  const description = "a gallery of images";
-  const darkMode = true; // toggle between true/false
+  const description = "a gallery of photos";
+  const darkMode = true;
   const borderRadius: string = "md"; // options: "none", "sm", "md", "lg", "xl", "full"
 
-  const { data: images, isLoading } = useImages();
+  const { data: photos, isLoading } = usePhotos();
 
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
@@ -44,13 +44,13 @@ export default function Gallery() {
   };
 
   const navigateToNext = () => {
-    if (!images?.length) return;
-    setCurrentPhotoIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    if (!photos?.length) return;
+    setCurrentPhotoIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
   };
 
   const navigateToPrev = () => {
-    if (!images?.length) return;
-    setCurrentPhotoIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    if (!photos?.length) return;
+    setCurrentPhotoIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
   };
 
   useEffect(() => {
@@ -111,7 +111,7 @@ export default function Gallery() {
     );
   }
 
-  if (!images || images.length === 0) {
+  if (!photos || photos.length === 0) {
     return (
       <div className={cn(darkMode ? "bg-gray-900" : "bg-amber-50")}>
         <h1 className="text-4xl mb-2 font-light tracking-tight">{title}</h1>
@@ -129,7 +129,7 @@ export default function Gallery() {
             darkMode ? "text-gray-300/80" : "text-amber-700/70",
           )}
         >
-          no images available to display
+          no photos available to display
         </p>
       </div>
     );
@@ -157,7 +157,7 @@ export default function Gallery() {
       </header>
 
       <div className="columns-1 lg:columns-2 2xl:columns-3 gap-4">
-        {images.map((photo, index) => (
+        {photos.map((photo, index) => (
           <div
             key={photo.photoId}
             className={cn(
@@ -187,7 +187,7 @@ export default function Gallery() {
         ))}
       </div>
 
-      {lightboxOpen && images && images.length > 0 && (
+      {lightboxOpen && photos && photos.length > 0 && (
         <div className="fixed inset-0 bg-black/95 flex items-center justify-center z-50">
           <button
             className="absolute top-5 right-8 text-white text-4xl bg-transparent border-none cursor-pointer z-[60] hover:text-amber-300 transition-colors duration-300"
@@ -199,7 +199,7 @@ export default function Gallery() {
           <button
             className="absolute top-1/2 left-5 -translate-y-1/2 bg-black/40 text-white border-none w-12 h-12 rounded-full text-3xl flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-amber-600/50 z-[60]"
             onClick={navigateToPrev}
-            aria-label="previous image"
+            aria-label="previous photo"
           >
             ‹
           </button>
@@ -207,9 +207,9 @@ export default function Gallery() {
             <img
               src={
                 import.meta.env.VITE_CDN_URL +
-                images[currentPhotoIndex].urls?.display
+                photos[currentPhotoIndex].urls?.display
               }
-              alt={images[currentPhotoIndex].originalFilename || "photo"}
+              alt={photos[currentPhotoIndex].originalFilename || "photo"}
               className="max-w-full max-h-[85vh] object-contain rounded shadow-xl"
             />
             <div className="absolute -bottom-10 left-0 right-0 text-center text-white/90 p-2.5 text-base">
@@ -219,7 +219,7 @@ export default function Gallery() {
           <button
             className="absolute top-1/2 right-5 -translate-y-1/2 bg-black/40 text-white border-none w-12 h-12 rounded-full text-3xl flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-amber-600/50 z-[60]"
             onClick={navigateToNext}
-            aria-label="next image"
+            aria-label="next photo"
           >
             ›
           </button>

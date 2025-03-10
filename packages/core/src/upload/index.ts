@@ -54,7 +54,7 @@ export namespace Upload {
           originalFilename: filename,
           size,
           contentType,
-          imageStatus: "uploading",
+          photoStatus: "uploading",
           s3Key: key,
           createdAt: new Date().toISOString(),
           expireAt: Math.floor(new Date().getTime() + 15 * 60 * 1000),
@@ -63,7 +63,7 @@ export namespace Upload {
     );
   };
 
-  export const updateImageMetadata = async (
+  export const updatePhotoMetadata = async (
     photoId: string,
     urls: Record<string, string>,
     metadata: sharp.Metadata,
@@ -80,11 +80,11 @@ export namespace Upload {
         sk: `PHOTO#${photoId}`,
       },
       UpdateExpression:
-        "SET #imageStatus = :imageStatus, #metadata = :metadata, #urls = :urls, " +
+        "SET #photoStatus = :photoStatus, #metadata = :metadata, #urls = :urls, " +
         "#aspectRatio = :aspectRatio, #width = :width, #height = :height " +
         "REMOVE #expireAt",
       ExpressionAttributeNames: {
-        "#imageStatus": "imageStatus",
+        "#photoStatus": "photoStatus",
         "#metadata": "metadata",
         "#urls": "urls",
         "#aspectRatio": "aspectRatio",
@@ -93,7 +93,7 @@ export namespace Upload {
         "#expireAt": "expireAt",
       },
       ExpressionAttributeValues: {
-        ":imageStatus": "complete",
+        ":photoStatus": "complete",
         ":metadata": {
           width: metadata.width,
           height: metadata.height,

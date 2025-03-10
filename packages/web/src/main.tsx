@@ -2,14 +2,16 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
-import UploadPage from "./app/upload.tsx";
+import UploadPage from "./app/gallerist/pictures/upload.tsx";
 import LayoutGallerist from "./app/layout-gallerist";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import "./index.css";
-import ManagementPage from "./app/manage.tsx";
-import GalleryPage from "./app/gallery.tsx";
+import ManagementPage from "./app/gallerist/pictures/manage.tsx";
+import GalleryPage from "./app/gallery/gallery.tsx";
 import LayoutGallery from "./app/layout-gallery.tsx";
-import AlbumManagementPage from "./app/albums.tsx";
+import AlbumsManagementPage from "./app/gallerist/albums/albums.tsx";
+import AlbumCreatePage from "./app/gallerist/albums/create.tsx";
+import AlbumManagementPage from "./app/gallerist/albums/album.tsx";
 
 const queryClient = new QueryClient();
 
@@ -35,8 +37,9 @@ createRoot(document.getElementById("root")!).render(
               </Route>
 
               <Route path="albums">
-                <Route index element={<AlbumManagementPage />} />
-                <Route path="create" element={<UploadPage />} />
+                <Route index element={<AlbumsManagementPage />} />
+                <Route path="create" element={<AlbumCreatePage />} />
+                <Route path=":id" element={<AlbumManagementPage />} />
               </Route>
             </Route>
             <Route

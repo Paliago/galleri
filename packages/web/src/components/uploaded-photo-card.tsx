@@ -1,14 +1,14 @@
-import { UploadedFile } from "@/app/upload";
+import { UploadedFile } from "@/app/gallerist/pictures/upload";
 import { Card, CardFooter } from "./ui/card";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { formatFileSize } from "@/lib/utils";
 
-export function UploadedImageCard({ file }: { file: UploadedFile }) {
+export function UploadedPhotoCard({ file }: { file: UploadedFile }) {
   const [isLoading, setIsLoading] = useState(true);
   const [loadAttempt, setLoadAttempt] = useState(0);
 
-  const imageUrl =
+  const photoUrl =
     import.meta.env.VITE_CDN_URL + "sm/" + file.id + "." + file.extension;
 
   // Initial delay before first attempt
@@ -34,7 +34,7 @@ export function UploadedImageCard({ file }: { file: UploadedFile }) {
     }
   }, [isLoading, loadAttempt]);
 
-  const handleImageError = () => {
+  const handlePhotoError = () => {
     setIsLoading(true);
   };
 
@@ -49,12 +49,12 @@ export function UploadedImageCard({ file }: { file: UploadedFile }) {
         {loadAttempt > 0 && (
           <img
             key={loadAttempt}
-            src={`${imageUrl}?attempt=${loadAttempt}`}
+            src={`${photoUrl}?attempt=${loadAttempt}`}
             alt={file.name}
             className="w-full h-full object-cover"
             style={{ opacity: isLoading ? 0 : 1 }}
             onLoad={() => setIsLoading(false)}
-            onError={handleImageError}
+            onError={handlePhotoError}
           />
         )}
       </div>

@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Image } from "@galleri/core/image";
+import { Photo } from "@galleri/core/photo";
 import {
   Download,
   FolderPlus,
@@ -17,26 +17,26 @@ import {
 import { formatFileSize } from "@/lib/utils";
 
 interface ManageLightboxProps {
-  image: Image.ImageData | null;
+  photo: Photo.PhotoData | null;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onDelete: (photoIds: string[]) => void;
   onAddToAlbum: (photoIds: string[], albumId: string) => void;
   onNavigatePrevious: () => void;
   onNavigateNext: () => void;
-  totalImages: number;
+  totalPhotos: number;
   currentIndex: number;
 }
 
 export function ManageLightbox({
-  image,
+  photo,
   isOpen,
   onOpenChange,
   onDelete,
   onAddToAlbum,
   onNavigatePrevious,
   onNavigateNext,
-  totalImages,
+  totalPhotos,
   currentIndex,
 }: ManageLightboxProps) {
   const formatDate = (dateString: string) => {
@@ -77,11 +77,11 @@ export function ManageLightbox({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[95vw] w-[95vw] max-h-[95vh] h-[95vh] p-4 flex flex-col">
         <DialogHeader className="flex justify-between items-center">
-          <DialogTitle className="hidden">Image Lightbox</DialogTitle>
+          <DialogTitle className="hidden">Photo Lightbox</DialogTitle>
           <div className="flex items-center gap-2">
-            {totalImages > 0 && (
+            {totalPhotos > 0 && (
               <span className="text-sm text-gray-500">
-                {currentIndex + 1} of {totalImages}
+                {currentIndex + 1} of {totalPhotos}
               </span>
             )}
           </div>
@@ -89,19 +89,19 @@ export function ManageLightbox({
 
         <div className="flex-grow flex flex-col overflow-hidden relative">
           {/* Navigation buttons */}
-          {totalImages > 1 && (
+          {totalPhotos > 1 && (
             <>
               <button
                 className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-black/30 hover:bg-black/50 dark:bg-white/30 dark:hover:bg-white/50 rounded-full p-2 text-white dark:text-black transition-all"
                 onClick={onNavigatePrevious}
-                aria-label="Previous image"
+                aria-label="Previous photo"
               >
                 <ChevronLeft className="h-6 w-6" />
               </button>
               <button
                 className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-black/30 hover:bg-black/50 dark:bg-white/30 dark:hover:bg-white/50 rounded-full p-2 text-white dark:text-black transition-all"
                 onClick={onNavigateNext}
-                aria-label="Next image"
+                aria-label="Next photo"
               >
                 <ChevronRight className="h-6 w-6" />
               </button>
@@ -111,11 +111,11 @@ export function ManageLightbox({
           <div className="relative flex-grow flex items-center justify-center rounded-md overflow-hidden">
             <img
               src={
-                image
-                  ? `${import.meta.env.VITE_CDN_URL}${image.urls?.display}`
+                photo
+                  ? `${import.meta.env.VITE_CDN_URL}${photo.urls?.display}`
                   : undefined
               }
-              alt={image?.originalFilename || ""}
+              alt={photo?.originalFilename || ""}
               className="max-w-full max-h-full object-contain rounded-lg"
             />
           </div>
@@ -130,25 +130,25 @@ export function ManageLightbox({
                   <li className="flex">
                     <span className="font-medium w-28">Size:</span>
                     <span className="text-gray-600 dark:text-gray-300">
-                      {formatFileSize(image?.size || 0)}
+                      {formatFileSize(photo?.size || 0)}
                     </span>
                   </li>
                   <li className="flex">
                     <span className="font-medium w-28">Dimensions:</span>
                     <span className="text-gray-600 dark:text-gray-300">
-                      {image?.width} × {image?.height}
+                      {photo?.width} × {photo?.height}
                     </span>
                   </li>
                   <li className="flex">
                     <span className="font-medium w-28">Format:</span>
                     <span className="text-gray-600 dark:text-gray-300">
-                      {image?.metadata?.format}
+                      {photo?.metadata?.format}
                     </span>
                   </li>
                   <li className="flex">
                     <span className="font-medium w-28">Color Space:</span>
                     <span className="text-gray-600 dark:text-gray-300">
-                      {image?.metadata?.space}
+                      {photo?.metadata?.space}
                     </span>
                   </li>
                 </ul>
@@ -161,19 +161,19 @@ export function ManageLightbox({
                   <li className="flex">
                     <span className="font-medium w-28">Uploaded:</span>
                     <span className="text-gray-600 dark:text-gray-300">
-                      {formatDate(image?.createdAt || "")}
+                      {formatDate(photo?.createdAt || "")}
                     </span>
                   </li>
                   <li className="flex">
                     <span className="font-medium w-28">Content Type:</span>
                     <span className="text-gray-600 dark:text-gray-300">
-                      {image?.contentType}
+                      {photo?.contentType}
                     </span>
                   </li>
                   <li className="flex">
                     <span className="font-medium w-28">Aspect Ratio:</span>
                     <span className="text-gray-600 dark:text-gray-300">
-                      {image?.aspectRatio?.toFixed(2)}
+                      {photo?.aspectRatio?.toFixed(2)}
                     </span>
                   </li>
                 </ul>
@@ -187,7 +187,7 @@ export function ManageLightbox({
                   className="flex items-center gap-1.5"
                   onClick={() =>
                     window.open(
-                      `${import.meta.env.VITE_CDN_URL}${image?.urls?.original}`,
+                      `${import.meta.env.VITE_CDN_URL}${photo?.urls?.original}`,
                       "_blank",
                     )
                   }
@@ -199,8 +199,8 @@ export function ManageLightbox({
                   variant="outline"
                   className="flex items-center gap-1.5"
                   onClick={() => {
-                    if (image) {
-                      onAddToAlbum([image.photoId], "newAlbum");
+                    if (photo) {
+                      onAddToAlbum([photo.photoId], "newAlbum");
                     }
                   }}
                 >
@@ -212,8 +212,8 @@ export function ManageLightbox({
                 variant="destructive"
                 className="flex items-center gap-1.5"
                 onClick={() => {
-                  if (image) {
-                    onDelete([image.photoId]);
+                  if (photo) {
+                    onDelete([photo.photoId]);
                     onOpenChange(false);
                   }
                 }}

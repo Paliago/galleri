@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { UploadedImageCard } from "@/components/uploaded-image-card";
+import { UploadedPhotoCard } from "@/components/uploaded-photo-card";
 import { useGetPresignedUrl } from "@/hooks/use-get-presigned-url";
 import { formatFileSize } from "@/lib/utils";
 import {
@@ -208,9 +208,9 @@ export default function UploadPage() {
   const errorCount = files.filter((f) => f.status === "error").length;
 
   return (
-    <div className="container max-w-6xl py-10 space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Upload Photos</h1>
+    <div className="space-y-4">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-semibold">Upload Photos</h2>
         {files.length > 0 && (
           <div className="flex space-x-2">
             <Badge variant="default">{files.length} Files</Badge>
@@ -231,7 +231,7 @@ export default function UploadPage() {
       </div>
 
       {/* Dropzone */}
-      <Card>
+      <Card className="border-none">
         <div
           {...getRootProps()}
           className={`
@@ -244,7 +244,7 @@ export default function UploadPage() {
           <div className="flex flex-col items-center justify-center gap-2">
             <Cloud className="h-10 w-10 text-muted-foreground" />
             <h3 className="text-lg font-semibold">
-              {isDragActive ? "Drop images here" : "Drag & drop images here"}
+              {isDragActive ? "Drop photos here" : "Drag & drop photos here"}
             </h3>
             <p className="text-sm text-muted-foreground">
               Or click to browse files
@@ -344,12 +344,12 @@ export default function UploadPage() {
       {uploadedFiles.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Uploaded Images</CardTitle>
+            <CardTitle>Uploaded Photos</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {uploadedFiles.map((file) => (
-                <UploadedImageCard key={file.id} file={file} />
+                <UploadedPhotoCard key={file.id} file={file} />
               ))}
             </div>
           </CardContent>
